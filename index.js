@@ -1,65 +1,70 @@
-var Host = `mindustry.io`
+var Host = `192.168.1.139`
 
 var dgram = require(`dgram`)
+const { version } = require("os")
 var buf = new Int8Array(2)
 buf[0] = -2
 buf[1] = 1
-console.log(buf)
 socket = dgram.createSocket(`udp4`)
-console.log(socket)
 socket.send(buf,0,2,6567,Host)
 
 function readString(buf) {
     var length = buf[0] & 0xff
-    //console.log(length)
     var text = ""
     for (i = 1; i < length+1; i++) {
-        //console.log(i, buf[i])
         text += String.fromCharCode(buf[i])
     }
-    //console.log(text)
     return [text, length+1]
 }
 
 socket.on('message', (msg, rinfo) => {
-    //console.log(`buffer: ${msg}`)
-    //console.log(msg[0].toString())
+    //host
     var str = readString(msg)
-    console.log(str)
+    host = str
     msg = msg.subarray(str[1])
+    //map
     var str = readString(msg)
-    console.log(str)
+    map = str
     msg = msg.subarray(str[1])
-    console.log(msg.readInt32BE())
-    //var map = readString(msg,host[1])
-    
-    //console.log(`${msg}`)
-    console.log(msg)
+    //players
+    players = msg.readInt32BE()
+    msg = msg.subarray(4)
+    //waves
+    waves = msg.readInt32BE()
+    msg = msg.subarray(4)
+    //version
+    gameversion = msg.readInt32BE()
+    msg = msg.subarray(4)
+    //version type
+    var str = readString(msg)
+    vertype = str
+    msg = msg.subarray(str[1])
+    //gamemode byte, who knows
+    gamemode = msg[0]
+    msg = msg.subarray(1)
+    //limit??
+    limit = msg.readInt32BE()
+    msg = msg.subarray(4)
+    //description
+    var str = readString(msg)
+    desc = str
+    msg = msg.subarray(str[1])
+    //mode name
+    var str = readString(msg)
+    modename = str
+    msg = msg.subarray(str[1])
+    var info = {
+        host: host[0],
+        map: map[0],
+        players: players,
+        waves: waves,
+        gameversion: gameversion,
+        vertype: vertype[0],
+        gamemode: gamemode,
+        limit: limit,
+        desc: desc[0],
+        modename: modename[0]
+    }
+    console.log(info)
 
 });
-
-/*
-private static String readString(ByteBuffer buffer){
-    short length = (short)(buffer.get() & 0xff);
-    byte[] bytes = new byte[length];
-    buffer.get(bytes);
-    return new String(bytes, charset);
-}
-
-
-
-public static Host readServerData(int ping, String hostAddress, ByteBuffer buffer){
-        String host = readString(buffer);
-        String map = readString(buffer);
-        int players = buffer.getInt();
-        int wave = buffer.getInt();
-        int version = buffer.getInt();
-        String vertype = readString(buffer);
-        Gamemode gamemode = Gamemode.all[buffer.get()];
-        int limit = buffer.getInt();
-        String description = readString(buffer);
-        String modeName = readString(buffer);
-
-        return new Host(ping, host, hostAddress, map, wave, players, version, vertype, gamemode, limit, description, modeName.isEmpty() ? null : modeName);
-    }
-*/
