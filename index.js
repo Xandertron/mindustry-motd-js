@@ -1,4 +1,5 @@
-var Host = `192.168.1.139`
+var Host = `mindustry.io`
+var Port = 6567
 
 var dgram = require(`dgram`)
 const { version } = require("os")
@@ -6,7 +7,7 @@ var buf = new Int8Array(2)
 buf[0] = -2
 buf[1] = 1
 socket = dgram.createSocket(`udp4`)
-socket.send(buf,0,2,6567,Host)
+socket.send(buf,0,2,Port,Host)
 
 function readString(buf) {
     var length = buf[0] & 0xff
