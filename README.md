@@ -1,5 +1,5 @@
 # mindustry-motd-js
-Gets the motd of a mindustry server, very messy
+Gets the motd of a mindustry server
 
 ```javascript
 mindmotd = require("./motd.js")
