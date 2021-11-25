@@ -1,3 +1,6 @@
+# note
+its probably best you use https://www.npmjs.com/package/mindustry.js and not mine, this was a fun project and im surprised it worked at all
+
 # mindustry-motd-js
 Gets the motd of a mindustry server
 
